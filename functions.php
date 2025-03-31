@@ -329,11 +329,11 @@ jQuery(document).ready(function ($) {
 
         if ($(this).hasClass("plus")) {
             if (max === null || currentVal < max) {
-                $qty.val(currentVal + step).change();
+                $qty.val(currentVal + step).trigger("change").trigger("input");
             }
         } else {
             if (currentVal > min) {
-                $qty.val(currentVal - step).change();
+                $qty.val(currentVal - step).trigger("change").trigger("input");
             }
         }
     });
