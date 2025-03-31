@@ -4,21 +4,6 @@
  *
  * @package HelloElementor
  */
-
-add_filter('woocommerce_add_cart_item_data', function ($cart_item_data, $product_id) {
-    if (isset($_POST['attribute_purchase-option']) && $_POST['attribute_purchase-option'] === 'One-Time') {
-        $cart_item_data['subscription_renewal'] = false; // Ensure no subscription data is saved
-		$cart_item_data['subscription_period'] = false;
-        $cart_item_data['subscription_length'] = false;
-        $cart_item_data['subscription_sign_up_fee'] = false;
-    	$cart_item_data['subscription_trial_length'] = false;
-        $cart_item_data['subscription_trial_period'] = false;
-        $cart_item_data['subscription_period_interval'] = false;
-    }
-    return $cart_item_data;
-}, 10, 2);
-
-
 add_filter('woocommerce_cart_item_price', function ($price, $cart_item, $cart_item_key) {
     if (isset($cart_item['subscription_renewal']) && !$cart_item['subscription_renewal']) {
         $price = wc_price($cart_item['line_subtotal']); // Override the subscription price
@@ -326,7 +311,6 @@ jQuery(document).ready(function ($) {
         var max = $qty.attr("max") ? parseFloat($qty.attr("max")) : null;
         var min = $qty.attr("min") ? parseFloat($qty.attr("min")) : 1;
         var step = $qty.attr("step") ? parseFloat($qty.attr("step")) : 1;
-
         if ($(this).hasClass("plus")) {
             if (max === null || currentVal < max) {
                 $qty.val(currentVal + step).trigger("change").trigger("input");
@@ -336,6 +320,8 @@ jQuery(document).ready(function ($) {
                 $qty.val(currentVal - step).trigger("change").trigger("input");
             }
         }
+		//$(document.body).trigger("updated_cart_totals"); // Updates cart totals if relevant
+    	//$(document.body).trigger("wc_fragment_refresh"); 
     });
 	
 	// Update .radio-price when quantity changes
@@ -380,7 +366,7 @@ add_action('wp_footer', function() {
     ?>
     <script>
     document.addEventListener("DOMContentLoaded", function() {
-        let interval = setInterval(() => {
+		setTimeout(() => {
             let stripeElement = document.querySelector('#wc-stripe-express-checkout-element');
             if (stripeElement) {
                 let expressDiv = document.createElement('div');
@@ -394,7 +380,6 @@ add_action('wp_footer', function() {
                     <hr style="flex-grow: 1; border: none; border-top: 1px solid #ddd; margin: 0 10px;">
                 `;
                 stripeElement.parentNode.insertBefore(expressDiv, stripeElement);
-                clearInterval(interval); // Stop checking once it's added
             }
         }, 500); // Check every 500ms
     });
